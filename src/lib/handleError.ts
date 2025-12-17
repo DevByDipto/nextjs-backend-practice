@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // lib/handleError.ts
 import { NextResponse } from 'next/server';
 
 export class AppError extends Error {
-  statusCode: number;
+  statusCode: number; 
   constructor(message: string, statusCode = 500) {
     super(message);
     this.statusCode = statusCode;
@@ -12,7 +13,10 @@ export class AppError extends Error {
 export const handleError = (err: any) => {
   console.error('Global API Error:', err);
   return NextResponse.json(
-    { message: err.message || 'Internal Server Error' },
+    { success:false,
+        message: err.message || 'Internal Server Error',
+        status:err.statusCode
+     },
     { status: err.statusCode || 500 }
   );
 };

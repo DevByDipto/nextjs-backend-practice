@@ -2,6 +2,7 @@
 // lib/auth.ts
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
+import { AppError, handleError } from "./handleError";
 
 export async function authenticate(req: NextRequest) {
   const authHeader = req.headers.get("Authorization");
@@ -18,9 +19,14 @@ export async function authenticate(req: NextRequest) {
 
 export function requireAuth(handler: (req: NextRequest, user: any) => Promise<NextResponse>) {
   return async function(req: NextRequest) {
-    const user = await authenticate(req);
-    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    try {
+       const user = await authenticate(req);
+    if (!user) throw new AppError("unathorized",401);
     return handler(req, user);
+    } catch (error) {
+      return handleError(error);
+    }
+   
   };
 }
 
